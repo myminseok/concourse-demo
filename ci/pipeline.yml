@@ -40,7 +40,7 @@ jobs:
         - get: m2
         - get:  repo
           resource: repo-master
-          passed: [ test-master ]
+          passed: [ test-master-job ]
           trigger: true
       - task: build
         file: repo/ci/tasks/build.yml
