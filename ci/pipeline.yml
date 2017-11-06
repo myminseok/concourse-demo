@@ -10,8 +10,18 @@ resources:
     type: docker-image
     source:
       repository: making/m2
+  - name: cf-dev
+    type: cf
+    source:
+      api: {{cf-api}}
+      username: {{cf-username}}
+      password: {{cf-password}}
+      organization: {{cf-org}}
+      space: {{cf-space-dev}}
+      skip_cert_check: true
+
 jobs:
-  - name: test-master
+  - name: test-master-job
     serial: true
     public: true
     plan:
@@ -22,7 +32,20 @@ jobs:
         - get: m2
       - task: unit
         file: repo/ci/tasks/unit.yml
-      - put: repo
-        resource: repo-master
+  - name: deploy-develop-job
+    serial: true
+    public: false
+    plan:
+      - aggregate:
+        - get: m2
+        - get:  repo
+          resource: repo-master
+          passed: [ test-master ]
+          trigger: true
+      - task: build
+        file: repo/ci/tasks/build.yml
+      - put: cf-dev
         params:
-           repository: out
+          manifest: repo/manifest-dev.yml
+          path: output/demo.jar
+          current_app_name: concourse-demo-dev
