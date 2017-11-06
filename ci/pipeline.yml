@@ -1,11 +1,4 @@
 resources:
-  - name: repo-develop
-    type: git
-    source:
-      uri: git@github.com:myminseok/concourse-demo.git
-      branch: develop
-      private_key: {{github-private-key}}
-    check_every: 10s
   - name: repo-master
     type: git
     source:
@@ -16,7 +9,7 @@ resources:
   - name: m2
     type: docker-image
     source:
-      repository: ubuntu
+      repository: making/m2
 jobs:
   - name: test-master
     serial: true
@@ -24,7 +17,7 @@ jobs:
     plan:
       - aggregate: 
         - get: repo
-          resource: repo-develop
+          resource: repo-master
           trigger: true
         - get: m2
       - task: unit

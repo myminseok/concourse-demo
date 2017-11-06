@@ -1,2 +1,3 @@
 .git/*
+target/*
 ci/credential.yml
